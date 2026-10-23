@@ -1,0 +1,25 @@
+{
+  "name": "medisetu",
+  "version": "2.0.0",
+  "description": "MediSetu: Bilingual Lab Report & Prescription Shorthand Reader, Sleep-Debt Assessment, First-Aid Reference, and Campus Notice Board.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node test_suite.mjs"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "healthcare",
+    "prescription-reader",
+    "bilingual",
+    "hindi",
+    "first-aid",
+    "full-stack",
+    "nodejs"
+  ],
+  "author": "Samarth Mishra",
+  "license": "MIT"
+}

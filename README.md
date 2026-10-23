@@ -1,46 +1,55 @@
-# 🩺 MediSetu AI — Smart Student & Community Health Companion
+# MediSetu
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Web_App-Open_Now-0f766e?style=for-the-badge)](https://samarthmishra12345678-lab.github.io/medisetu-ai/)
-[![Built By](https://img.shields.io/badge/Builder-Samarth_Mishra-1d4ed8?style=for-the-badge)](https://github.com/samarthmishra12345678-lab/medisetu-ai)
+Full-stack health reference web application built by **Samarth Mishra** using a static frontend (`HTML5`, `CSS3`, `ES6+ JavaScript`) paired with `Node.js` / `Vercel Serverless` REST APIs.
 
-> **Live Demo URL:** [https://samarthmishra12345678-lab.github.io/medisetu-ai/](https://samarthmishra12345678-lab.github.io/medisetu-ai/)  
-> **GitHub Repository:** [https://github.com/samarthmishra12345678-lab/medisetu-ai](https://github.com/samarthmishra12345678-lab/medisetu-ai)
+## Purpose
 
----
+MediSetu translates laboratory report values and Latin prescription abbreviations into plain English and Hindi, checks supplement timing interactions, evaluates student sleep debt and study fatigue, provides standard first-aid protocols, and hosts a live session notice board for student groups.
 
-## 🎯 Problem Statement
-Millions of students, parents, and elders face three critical everyday health challenges:
-1. **Confusing Medical Reports & Prescription Shorthand (`Hb`, `SOS`, `OD BBF`, `PC`, `HS`):** Families leave clinics without understanding low blood markers or exact dosage schedules.
-2. **Silent Student Burnout & Exam Fatigue:** High-school students experience sleep debt, Vitamin D/Iron deficiency, and exam anxiety without quick self-assessment tools.
-3. **Panic During Community Emergencies:** During heatstroke, school fainting, kitchen burns, or choking, people often rely on harmful myths instead of verified first-aid steps.
+## Core Modules
 
----
+| Module | Frontend Component | Backend Route |
+| :--- | :--- | :--- |
+| **Lab & Prescription Reader** | Bilingual output + browser speech read-aloud | `POST /api/analyze` |
+| **Sleep & Study Fatigue Check** | Interactive sliders + 4-4-4-4 paced breathing timer | `POST /api/burnout` |
+| **Campus Notice Board** | Sanitized notice submission + helpful confirmation | `GET /api/community`, `POST /api/community` |
+| **First-Aid Protocols** | Immediate steps for fainting, burns, choking, and snakebite | Client reference |
+| **Daily Dose Checklist** | Private device reminders with data clear controls | Browser `localStorage` |
+| **Legal & Privacy Pages** | Dedicated `/privacy.html`, `/terms.html`, and SVG favicon | Static routes |
 
-## 💡 Our Solution — MediSetu AI
-**MediSetu AI** (*"Health Bridge"*) is a fast, zero-login, bilingual (**English + हिन्दी**) web platform built for students, families, and local communities:
-- **🩺 Prescription & Lab Report Simplifier:** Translates blood report metrics and doctor abbreviations (`OD`, `BD`, `BBF`, `PC`, `SOS`, `HS`) into everyday English & Hindi with **1-click Voice Read-Aloud (`Web Speech API`)**.
-- **🧠 Student Burnout & Sleep Check + 4-4-4-4 Box Breathing:** Real-time wellness score from sleep, study/screen hours, and exam pressure + animated breathing pacer & India **14416 Tele-MANAS** student helpline.
-- **🚑 Offline Community First-Aid Action Guides:** Step-by-step DOs & DON'Ts for Heatstroke/Fainting, Burns, and Choking + 1-tap `112 / 108` SOS emergency dialer.
-- **💊 Daily Medicine & Hydration Tracker:** Persistent browser checklist (`localStorage`) so students and elders never miss doses.
+## Directory Structure
 
----
-
-## 🛠️ Tech Stack
-- **Frontend UI:** Semantic `HTML5` + Responsive `CSS3` Grid & Custom Design System
-- **Logic & State Persistence:** Vanilla `JavaScript (ES6+)` + `localStorage`
-- **Voice Accessibility:** Browser `Web Speech Synthesis API` (`en-IN` & `hi-IN`)
-- **Hosting:** Deployed live on **GitHub Pages** (https://samarthmishra12345678-lab.github.io/medisetu-ai/)
-
----
-
-## 🚀 Run Locally
-```bash
-git clone https://github.com/samarthmishra12345678-lab/medisetu-ai.git
-cd medisetu-ai
-python3 -m http.server 8000
+```text
+medisetu-fullstack/
+├── api/
+│   ├── health.js          # GET /api/health
+│   ├── analyze.js         # POST /api/analyze
+│   ├── burnout.js         # POST /api/burnout
+│   └── community.js       # GET & POST /api/community
+├── public/
+│   ├── favicon.svg        # Vector SVG favicon
+│   ├── index.html         # Main application page
+│   ├── privacy.html       # Privacy policy & local storage clear control
+│   ├── terms.html         # Terms, conditions & clinical disclaimer
+│   ├── styles.css         # Flat architectural zinc & emerald stylesheet
+│   └── app.js             # Frontend API client & audio readout
+├── docs/
+│   └── MediSetu_Project_Summary.pdf
+├── server.js              # Local HTTP full-stack server
+├── test_suite.mjs         # Automated API & static standards audit suite
+├── vercel.json            # Vercel routing configuration
+└── package.json           # Node scripts & metadata
 ```
 
----
+## Run & Verify Locally
 
-## 🤖 AI & Fair-Use Disclosure
-AI tools were used during brainstorming, medical shorthand rule structuring, and documentation refinement. All code, features, and live demonstrations are understood and maintained by **Samarth Mishra**.
+```bash
+npm start
+npm test
+```
+
+## Engineering & Accessibility Details
+
+- **Color & Layout:** Neutral zinc surfaces (`#09090b`, `#18181b`) paired with high-contrast emerald accents (`#0f766e`), clean flat typography, `6px` rectangular control geometry, and inline geometric vector icons.
+- **Privacy Architecture:** Zero user accounts, zero tracking cookies, zero third-party analytics scripts, and a single-click local storage clear control on `/privacy.html`.
+- **Legal Coverage:** Full clinical non-substitution disclaimer and emergency guidance (`112` / `108` / `14416`) linked globally from every page via `/terms.html`.

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediSetu | Lab Report Reader, Study Fatigue Check & First-Aid Guide</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="square">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+        </span>
+        <span class="brand-title">MediSetu</span>
+      </a>
+
+      <div class="top-actions">
+        <button class="status-tag" onclick="toggleApiDrawer()" title="Inspect raw backend API response">
+          <span class="status-indicator"></span>
+          <span id="api-telemetry">API Online</span>
+        </button>
+        <button class="btn btn-outline" id="lang-btn" onclick="toggleLang()">Hindi / English</button>
+        <a class="btn btn-danger" href="tel:112">Emergency: 112 / 108</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="intro-header">
+      <div class="intro-kicker">Student &amp; Family Health Reference</div>
+      <h1>Read blood reports and prescription shorthand in plain English or Hindi.</h1>
+      <p>Check laboratory reference ranges, decode Latin dosing abbreviations (OD, BD, BBF, PC, HS, SOS), track daily supplement timing, assess exam sleep debt, and review standard emergency first-aid steps.</p>
+    </section>
+
+    <section class="api-drawer" id="api-drawer">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <strong style="font-size:13px;">Live Backend API Response Inspector</strong>
+          <button class="btn btn-outline" style="padding:4px 10px; font-size:12px;" onclick="toggleApiDrawer()">Close</button>
+        </div>
+        <pre class="code-block" id="api-json-preview">Waiting for API request...</pre>
+      </div>
+    </section>
+
+    <nav class="tabs" aria-label="Application Tools">
+      <button class="tab-btn active" onclick="switchTab('report', this)">
+        Lab &amp; Prescription Reader
+        <span>POST /api/analyze</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('wellness', this)">
+        Sleep &amp; Study Fatigue
+        <span>POST /api/burnout</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('community', this)">
+        Campus Notice Board
+        <span>GET &amp; POST /api/community</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('firstaid', this)">
+        First-Aid Steps
+        <span>Emergency protocols</span>
+      </button>
+      <button class="tab-btn" onclick="switchTab('meds', this)">
+        Dose Checklist
+        <span>Local browser storage</span>
+      </button>
+    </nav>
+
+    <!-- PANEL 1: LAB & RX READER -->
+    <section id="panel-report" class="panel active">
+      <div class="grid-2">
+        <div class="card">
+          <h3>Enter Prescription or Blood Report Text</h3>
+          <p class="subtext">Load a clinical sample below or paste values from a lab report:</p>
+          <div class="preset-row">
+            <button class="preset-btn" onclick="loadSample('anemia')">CBC + Vitamin D + Iron Rx</button>
+            <button class="preset-btn" onclick="loadSample('fever')">Fever + Low Platelets Rx</button>
+            <button class="preset-btn" onclick="loadSample('diabetes')">Fasting Glucose + HbA1c</button>
+            <button class="preset-btn" onclick="loadSample('antibiotic')">Antibiotic Course Rx</button>
+          </div>
+          <textarea id="rx-input" rows="7" placeholder="Example: Hemoglobin: 9.6 g/dL, Vitamin D3: 12.2 ng/mL, Tab Iron OD PC..."></textarea>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="runAnalyzeApi()">Analyze Report</button>
+            <button class="btn btn-outline" onclick="speakSummary()">Read Aloud (Audio)</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Structured Reference Output</h3>
+          <p class="subtext">Processed via backend endpoint <code>POST /api/analyze</code>:</p>
+          <div id="rx-priority"></div>
+          <div id="rx-output"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 2: STUDENT SLEEP & FATIGUE -->
+    <section id="panel-wellness" class="panel">
+      <div class="grid-2">
+        <div class="card">
+          <h3>Sleep Debt &amp; Study Load Check</h3>
+          <p class="subtext">Adjust values to compute recovery recommendations via <code>POST /api/burnout</code>:</p>
+
+          <div class="slider-wrap">
+            <div class="slider-top">
+              <span>Sleep Last Night</span>
+              <span id="lbl-sleep">6 hrs</span>
+            </div>
+            <input type="range" id="in-sleep" min="3" max="10" step="0.5" value="6" onchange="runBurnoutApi()" oninput="previewSliders()" />
+          </div>
+
+          <div class="slider-wrap">
+            <div class="slider-top">
+              <span>Study / Screen Duration Today</span>
+              <span id="lbl-study">9 hrs</span>
+            </div>
+            <input type="range" id="in-study" min="1" max="15" step="1" value="9" onchange="runBurnoutApi()" oninput="previewSliders()" />
+          </div>
+
+          <div class="slider-wrap">
+            <div class="slider-top">
+              <span>Perceived Exam Stress (1 to 10)</span>
+              <span id="lbl-stress">7 / 10</span>
+            </div>
+            <input type="range" id="in-stress" min="1" max="10" step="1" value="7" onchange="runBurnoutApi()" oninput="previewSliders()" />
+          </div>
+
+          <div class="slider-wrap">
+            <div class="slider-top">
+              <span>Water Intake Today</span>
+              <span id="lbl-water">5 glasses</span>
+            </div>
+            <input type="range" id="in-water" min="1" max="12" step="1" value="5" onchange="runBurnoutApi()" oninput="previewSliders()" />
+          </div>
+
+          <div class="score-panel">
+            <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:#52525b;">Readiness Index</div>
+            <div class="score-value" id="burnout-score">-- / 100</div>
+            <div id="burnout-summary" style="font-size:13px; font-weight:600;">Calculating...</div>
+          </div>
+          <div id="burnout-actions"></div>
+        </div>
+
+        <div class="card" style="text-align:center;">
+          <h3>4-4-4-4 Paced Breathing Timer</h3>
+          <p class="subtext">Four-second inhale, hold, exhale, and rest intervals:</p>
+          <div class="breath-box" id="breath-orb">Ready</div>
+          <p id="breath-step" style="font-weight:600; font-size:13.5px; margin-bottom:14px;">Click start for guided timing</p>
+          <button class="btn btn-primary" id="breath-btn" onclick="toggleBreathing()">Start 4-Second Pacer</button>
+
+          <div class="result-card info" style="text-align:left; margin-top:20px;">
+            <div class="card-head">
+              <h4>Government of India Tele-MANAS Helpline</h4>
+              <span class="tag-label">TOLL-FREE</span>
+            </div>
+            <p>Dial <strong>14416</strong> or <strong>1800-891-4416</strong> for free 24-hour student mental health and exam stress counseling across India.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 3: CAMPUS NOTICE BOARD -->
+    <section id="panel-community" class="panel">
+      <div class="grid-2">
+        <div class="card">
+          <h3>Publish Campus or Community Notice</h3>
+          <p class="subtext">Share study group timings, school health checkups, or local water/ORS stations:</p>
+          <input type="text" id="post-author" placeholder="Name or Student Group (e.g., Samarth, Class 11)" maxlength="50" />
+          <select id="post-tag">
+            <option value="Study Group">Study Group</option>
+            <option value="Health Checkup">Health Checkup</option>
+            <option value="Hydration / ORS">Hydration / ORS</option>
+            <option value="Community Notice">Community Notice</option>
+          </select>
+          <input type="text" id="post-title" placeholder="Notice title" maxlength="110" />
+          <textarea id="post-body" rows="4" placeholder="Location, time, and clear instructions..." maxlength="280"></textarea>
+          <button class="btn btn-primary" onclick="submitCommunityPost()">Post Notice</button>
+        </div>
+
+        <div class="card">
+          <h3>Active Notices</h3>
+          <p class="subtext">Live session entries retrieved from <code>GET /api/community</code>:</p>
+          <div id="community-feed"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 4: FIRST AID -->
+    <section id="panel-firstaid" class="panel">
+      <div class="card">
+        <h3>Standard Emergency First-Aid Protocols</h3>
+        <p class="subtext">Select a situation for verified immediate response steps:</p>
+        <div class="aid-grid" id="aid-buttons"></div>
+        <div id="aid-steps"></div>
+      </div>
+    </section>
+
+    <!-- PANEL 5: DOSE TRACKER -->
+    <section id="panel-meds" class="panel">
+      <div class="grid-2">
+        <div class="card">
+          <h3>Add Supplement or Hydration Reminder</h3>
+          <p class="subtext">Stored privately on your own browser via <code>localStorage</code>:</p>
+          <input type="text" id="med-name" placeholder="Item name (e.g., Iron Tablet after lunch)" />
+          <select id="med-slot">
+            <option value="Morning (Before Breakfast)">Morning (Before Breakfast)</option>
+            <option value="Afternoon (After Lunch)">Afternoon (After Lunch)</option>
+            <option value="Night (After Dinner)">Night (After Dinner)</option>
+          </select>
+          <button class="btn btn-primary" onclick="addMedItem()">Add Item</button>
+        </div>
+
+        <div class="card">
+          <h3>Daily Checklist (<span id="med-counter">0/0</span> Completed)</h3>
+          <p class="subtext">Select an item to mark complete or remove it:</p>
+          <div id="med-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>MediSetu</strong> &middot; Educational health reference only; not a substitute for clinical diagnosis. Call <strong>112</strong> or <strong>108</strong> in medical emergencies.
+      </div>
+      <nav class="footer-links" aria-label="Legal Navigation">
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms &amp; Conditions</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>
